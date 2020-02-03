@@ -1,17 +1,15 @@
 package pageobjects;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
+import java.util.List;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static tests.Config.baseUrl;
 
 public class BasePage {
@@ -22,44 +20,27 @@ public class BasePage {
         this.driver = driver;
     }
 
-    public void visit(String url) {
-        if (url.contains("http")) {
-            driver.get(url);
-        } else {
-            driver.get(baseUrl + url);
-        }
-    }
-
     public void click(By locator) {
-        find(locator, "my-iframe").click();
+        find(locator).click();
     }
 
-    // Reserved for e.mokilizingas.lt
     public WebElement find(By locator) {
-        switchToDefault();
-        return driver.findElement(locator);
-    }
-
-    public WebElement find(By locator, String frame) {
-        switchTo(frame);
         return driver.findElement(locator);
     }
 
     public String getTextOf(By locator) {
-        return find(locator, "my-iframe").getText();
+        return find(locator).getText();
     }
 
     public Boolean isDisplayed(By locator) {
         try {
-            return find(locator, "my-iframe").isDisplayed();
+            return find(locator).isDisplayed();
         } catch (org.openqa.selenium.NoSuchElementException exception) {
             return false;
         }
     }
 
-    // Reserved for e.mokilizingas.lt
     public Boolean isDisplayed(By locator, Integer timeout) {
-        switchToDefault();
         try {
             WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(timeout));
             wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
@@ -69,22 +50,27 @@ public class BasePage {
         return true;
     }
 
-    public void select(By locator, String option) {
-        Select selectList = new Select(find(locator, "my-iframe"));
-        selectList.selectByVisibleText(option);
-        assertThat(selectList.getFirstSelectedOption().getText(), is(equalTo(option)));
-    }
-
-    public void switchToDefault() {
-        driver.switchTo().defaultContent();
-    }
-
-    public void switchTo(String context) {
-        driver.switchTo().frame(context);
+    public void select(By locator1, By locator2, String desiredOption) {
+        WebElement dropdownList = find(locator1);
+        List<WebElement> options = dropdownList.findElements(locator2);
+        for (WebElement option : options) {
+            if (option.getText().equals(desiredOption)) {
+                option.click();
+            }
+        }
     }
 
     public void type(By locator, String inputText) {
-        find(locator, "my-iframe").sendKeys(inputText);
+        // Since clear() and CTRL+A does not work, select all the text in the field in a rare way and then send the new sequence normally
+        find(locator).sendKeys(Keys.HOME, Keys.chord(Keys.SHIFT, Keys.END), inputText);
+    }
+
+    public void visit(String url) {
+        if (url.contains("http")) {
+            driver.get(url);
+        } else {
+            driver.get(baseUrl + url);
+        }
     }
 
 }

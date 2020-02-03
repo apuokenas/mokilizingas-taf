@@ -7,8 +7,7 @@ import pageobjects.ApplyForLoan;
 import tests.groups.Deep;
 import tests.groups.Shallow;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class TestApplyForLoan extends BaseTest {
 
@@ -24,10 +23,8 @@ public class TestApplyForLoan extends BaseTest {
     public void checkIfMonthlyInstallmentCalculatedForMinAmountAndMaxTerm() {
         String actualInstallmentAmount = applyForLoan.ofAmountAndTerm("500", "72 mėn.", true);
         String expectedInstallmentAmount = "11.17 EUR";
-        assertTrue("Installment amount not present",
-                applyForLoan.installmentAmountPresent());
         assertEquals("Installment amount different than expected",
-                actualInstallmentAmount, expectedInstallmentAmount);
+                expectedInstallmentAmount, actualInstallmentAmount);
     }
 
     @Test
@@ -35,10 +32,8 @@ public class TestApplyForLoan extends BaseTest {
     public void checkIfMonthlyInstallmentCalculatedForMaxAmountAndMinTerm() {
         String actualInstallmentAmount = applyForLoan.ofAmountAndTerm("15000", "6 mėn.", true);
         String expectedInstallmentAmount = "2649.42 EUR";
-        assertTrue("Installment amount not present",
-                applyForLoan.installmentAmountPresent());
         assertEquals("Installment amount different than expected",
-                actualInstallmentAmount, expectedInstallmentAmount);
+                expectedInstallmentAmount, actualInstallmentAmount);
     }
 
     @Test
@@ -46,10 +41,8 @@ public class TestApplyForLoan extends BaseTest {
     public void checkIfMonthlyInstallmentCalculatedForInvalidMinAmountAndMinTerm() {
         String actualInstallmentAmount = applyForLoan.ofAmountAndTerm("499.99", "6 mėn.", true);
         String expectedInstallmentAmount = "88.66 EUR"; // loanAmount -> "500"
-        assertTrue("Installment amount not present",
-                applyForLoan.installmentAmountPresent());
         assertEquals("Installment amount different than expected",
-                actualInstallmentAmount, expectedInstallmentAmount);
+                expectedInstallmentAmount, actualInstallmentAmount);
     }
 
     @Test
@@ -57,10 +50,8 @@ public class TestApplyForLoan extends BaseTest {
     public void checkIfMonthlyInstallmentCalculatedForInvalidMaxAmountAndMinTerm() {
         String actualInstallmentAmount = applyForLoan.ofAmountAndTerm("15000.0000000001", "72 mėn.", true);
         String expectedInstallmentAmount = "332.16 EUR"; // loanAmount -> "15000"
-        assertTrue("Installment amount not present",
-                applyForLoan.installmentAmountPresent());
         assertEquals("Installment amount different than expected",
-                actualInstallmentAmount, expectedInstallmentAmount);
+                expectedInstallmentAmount, actualInstallmentAmount);
     }
 
     @Test
@@ -70,7 +61,7 @@ public class TestApplyForLoan extends BaseTest {
         applyForLoan.as("Vardas", "Pavardėnas", "36312311234", "860012345", "conspiratorial.email@gmail.com");
         applyForLoan.giveConsents(true, true);
         applyForLoan.submit();
-        assertTrue("process_closed payment_message not present",
+        assertFalse("process_closed payment_message present",
                 applyForLoan.failureMessagePresent());
 //      assertTrue("Loaning system not loaded",
 //              applyForLoan.loaningSystemLoaded());
@@ -83,8 +74,10 @@ public class TestApplyForLoan extends BaseTest {
         applyForLoan.as("Vardas", "Pavardėnas", "36312311234", "860012345", "conspiratorial.email@gmail.com");
         applyForLoan.giveConsents(true, false);
         applyForLoan.submit();
-        assertTrue("process_closed payment_message not present",
+        assertFalse("process_closed payment_message present",
                 applyForLoan.failureMessagePresent());
+//      assertTrue("Loaning system not loaded",
+//              applyForLoan.loaningSystemLoaded());
     }
 
     @Test
@@ -94,8 +87,18 @@ public class TestApplyForLoan extends BaseTest {
         applyForLoan.as("", "", "", "", "");
         applyForLoan.giveConsents(false, false);
         applyForLoan.submit();
-        assertTrue("process_closed payment_message not present",
-                applyForLoan.failureMessagePresent());
+        assertTrue("error_name message not present",
+                applyForLoan.errorMessageForNamePresent());
+        assertTrue("error_surname message not present",
+                applyForLoan.errorMessageForSurnamePresent());
+        assertTrue("error_code message not present",
+                applyForLoan.errorMessageForSsnPresent());
+        assertTrue("error_phone message not present",
+                applyForLoan.errorMessageForPhoneNoPresent());
+        assertTrue("error_email message not present",
+                applyForLoan.errorMessageForEmailPresent());
+        assertTrue("error_privacy message not present",
+                applyForLoan.errorMessageForRegulatoryPresent());
     }
 
     //TODO: Implement more happy path, sad path and edge case scenarios once the loaning system goes up
