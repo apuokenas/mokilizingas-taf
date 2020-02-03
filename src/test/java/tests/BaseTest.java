@@ -1,5 +1,6 @@
 package tests;
 
+import com.saucelabs.saucerest.SauceREST;
 import org.junit.Rule;
 import org.junit.rules.ExternalResource;
 import org.junit.rules.TestRule;
@@ -10,8 +11,9 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
+
 import java.net.URL;
-import com.saucelabs.saucerest.SauceREST;
+
 import static tests.Config.*;
 
 public class BaseTest {
@@ -26,7 +28,17 @@ public class BaseTest {
 
         @Override
         protected void before() throws Throwable {
-            if (host.equals("saucelabs")) {
+            if (host.equals("localhost")) {
+                if (browserName.equals("chrome")) {
+                    System.setProperty("webdriver.chrome.driver",
+                            System.getProperty("user.dir") + "/vendor/chromedriver");
+                    driver = new ChromeDriver();
+                } else if (browserName.equals("firefox")) {
+                    System.setProperty("webdriver.gecko.driver",
+                            System.getProperty("user.dir") + "/vendor/geckodriver");
+                    driver = new FirefoxDriver();
+                }
+            } else if (host.equals("saucelabs")) {
                 DesiredCapabilities capabilities = new DesiredCapabilities();
                 capabilities.setCapability("browserName", browserName);
                 capabilities.setCapability("browserVersion", browserVersion);
@@ -37,16 +49,6 @@ public class BaseTest {
                 driver = new RemoteWebDriver(new URL(sauceUrl), capabilities);
                 sessionId = ((RemoteWebDriver) driver).getSessionId().toString();
                 sauceClient = new SauceREST(sauceUser, sauceKey);
-            } else if (host.equals("localhost")) {
-                if (browserName.equals("firefox")) {
-                    System.setProperty("webdriver.gecko.driver",
-                            System.getProperty("user.dir") + "/vendor/geckodriver");
-                    driver = new FirefoxDriver();
-                } else if (browserName.equals("chrome")) {
-                    System.setProperty("webdriver.chrome.driver",
-                            System.getProperty("user.dir") + "/vendor/chromedriver");
-                    driver = new ChromeDriver();
-                }
             }
         }
 

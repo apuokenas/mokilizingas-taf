@@ -4,11 +4,14 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
-import java.util.List;
 
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static tests.Config.baseUrl;
 
 public class BasePage {
@@ -27,37 +30,36 @@ public class BasePage {
         }
     }
 
+    public void click(By locator) {
+        find(locator, "my-iframe").click();
+    }
+
+    // Reserved for e.mokilizingas.lt
     public WebElement find(By locator) {
+        switchToDefault();
         return driver.findElement(locator);
     }
 
-    public void click(By locator) {
-        find(locator).click();
+    public WebElement find(By locator, String frame) {
+        switchTo(frame);
+        return driver.findElement(locator);
     }
 
-    public void select(By locator1, By locator2, String optionToBeSelected) {
-        WebElement dropdownList = driver.findElement(locator1);
-        List<WebElement> options = dropdownList.findElements(locator2);
-        for (int i = 0; i < options.size(); i++) {
-            if (options.get(i).getText().equals(optionToBeSelected)) {
-                options.get(i).click();
-            }
-        }
-    }
-
-    public void type(String inputText, By locator) {
-        find(locator).sendKeys(inputText);
+    public String getTextOf(By locator) {
+        return find(locator, "my-iframe").getText();
     }
 
     public Boolean isDisplayed(By locator) {
         try {
-            return find(locator).isDisplayed();
+            return find(locator, "my-iframe").isDisplayed();
         } catch (org.openqa.selenium.NoSuchElementException exception) {
             return false;
         }
     }
 
+    // Reserved for e.mokilizingas.lt
     public Boolean isDisplayed(By locator, Integer timeout) {
+        switchToDefault();
         try {
             WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(timeout));
             wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
@@ -65,6 +67,24 @@ public class BasePage {
             return false;
         }
         return true;
+    }
+
+    public void select(By locator, String option) {
+        Select selectList = new Select(find(locator, "my-iframe"));
+        selectList.selectByVisibleText(option);
+        assertThat(selectList.getFirstSelectedOption().getText(), is(equalTo(option)));
+    }
+
+    public void switchToDefault() {
+        driver.switchTo().defaultContent();
+    }
+
+    public void switchTo(String context) {
+        driver.switchTo().frame(context);
+    }
+
+    public void type(By locator, String inputText) {
+        find(locator, "my-iframe").sendKeys(inputText);
     }
 
 }
