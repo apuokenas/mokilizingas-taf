@@ -35,8 +35,8 @@ public class ApplyForLoan extends BasePage {
         visit("/paskola");
         assertTrue("The loan form/calculator is not present",
                 isDisplayed(loanFormLocator));
-        WebElement frame = driver.findElement(loanFormLocator);
-        driver.switchTo().frame(frame);
+        WebElement context = driver.findElement(loanFormLocator);
+        driver.switchTo().frame(context);
     }
 
     public void as(String name, String surname, String ssn, String phoneNo, String email) {
@@ -97,7 +97,6 @@ public class ApplyForLoan extends BasePage {
     public String ofAmountAndTerm(String loanAmount, String term, Boolean installmentAmountRequired) {
         type(loanAmountLocator, loanAmount);
         select(termDropdownListLocator, termOptionsLocator, term);
-        //click(installmentAmountLocator); // To refresh the installment amount
         String installmentAmount = null;
         if (installmentAmountRequired) {
             installmentAmount = getTextOf(installmentAmountLocator);

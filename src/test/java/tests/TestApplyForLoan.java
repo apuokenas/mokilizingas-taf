@@ -83,7 +83,7 @@ public class TestApplyForLoan extends BaseTest {
     @Test
     @Category(Shallow.class)
     public void checkIfNotAppliedWhenRequiredFieldsLeftUnpopulated() {
-        applyForLoan.ofAmountAndTerm("", "");
+        applyForLoan.ofAmountAndTerm(" ", "72 mėn.");
         applyForLoan.as("", "", "", "", "");
         applyForLoan.giveConsents(false, false);
         applyForLoan.submit();

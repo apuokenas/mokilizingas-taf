@@ -3,9 +3,11 @@ UI automation tests for "autobilis.lt PASKOLA" powered by Mokilizingas
 
 ## Tech Stack
 1. Java SDK 1.8 (8u231)
-2. IntelliJ IDEA 2019.3.2 (you may import this repo into IDE as a Maven project)
+2. IntelliJ IDEA ULTIMATE 2019.3.2 (you may import this repo into any Java-supported IDE as a Maven project)
 3. JUnit 4.13
 4. Selenium 4.0.0-alpha-4
+5. ChromeDriver 79.0.3945.36
+6. geckodriver v0.26.0
 5. Saucerest 1.0.43 (you may use your own SAUCE_USERNAME and SAUCE_ACCESS_KEY)
 6. Maven Surefire Plugin 3.0.0-M4 (for patallelized cloud execution)
 
