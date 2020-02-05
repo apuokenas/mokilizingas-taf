@@ -17,7 +17,7 @@ This Test Automation Framework implements Page Object Model design pattern for s
 Run tests (from src/test/java/tests/TestApplyForLoan.java) one-by-one or altogether, just as you normally would.
 
 ### 2.2. Terminal
-Make sure you land on a working directory having pom.xml (`pwd`, `cd`, _xor_ `ls` may help for Unixers), and from there run `mvn clean test`.
+Make sure you land on a working directory having pom.xml (`pwd`, `cd`, _xor_ `ls` may help for Unixers), and from there run `mvn clean test` (it is required to have [Apache Maven](https://maven.apache.org/download.cgi "Download Apache Maven") on your system upfront; it is [deadly simple](https://github.com/rajivkanaujia/alphaworks/wiki/Installing-Maven "Install Maven via Homebrew") for macOS users).
 
 #### 2.2.1 Other Usage Options
 * Tests scripts are tagged as "shallow" (critical tests for quick feedback) and "deep" (less critical ones and/or these which potentially could take longer to run). You may choose what you want to run (e.g., `mvn clean test -Dgroups=test.groups.Deep`).
