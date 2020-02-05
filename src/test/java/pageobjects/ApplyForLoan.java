@@ -2,110 +2,41 @@ package pageobjects;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+/**
+ * @author M. Tumėnas
+ * @since 2020-02-02
+ */
 public class ApplyForLoan extends BasePage {
 
-    By consentToRegulatoryCheckbox = By.id("duomenys"); // Patvirtinu, kad susipažinau ir sutinku su AB „Mokilizingas“ Privatumo politika ir Taisyklėmis.
-    By consentToMarketingCheckbox = By.id("susisiektu"); // Sutinku, kad AB „Mokilizingas” su manimi susisiektų aukščiau pateiktais kontaktiniais duomenimis siekiant pasiūlyti savo ir partnerių paslaugas bei produktus. Šis sutikimas galioja 1 metus arba kol bus atšauktas
-    By emailLocator = By.name("mokiban-pastas"); // El. paštas
-    By errorMessageForEmailLocator = By.className(".error.error_email");
-    By errorMessageForNameLocator = By.className(".error.error_name");
-    By errorMessageForPhoneNoLocator = By.className(".error.error_phone");
-    By errorMessageForRegulatoryLocator = By.className(".error.error_privacy");
-    By errorMessageForSsnLocator = By.className(".error.error_code");
-    By errorMessageForSurnameLocator = By.className(".error.error_surname");
-    By failureMessageLocator = By.id("process_closed");
-    By installmentAmountLocator = By.xpath("//span[@class='select_imoka']");
-    By loanAmountLocator = By.xpath("//input[@class='select_suma']"); // Paskolos suma
-    By loaningSystemWizardLocator = By.id(""); //TODO: Resolve a typical web element of the "Registracija - E Paskola - Mokilizingas" page when the loaning system goes up
-    By loanFormLocator = By.xpath("//iframe[@class]");
-    By nameLocator = By.name("mokiban-vardas"); // Vardas
-    By phoneNoLocator = By.name("mokiban-telefonas"); // Telefono nr.
-    By surnameLocator = By.name("mokiban-pavarde"); // Pavardė
-    By ssnLocator = By.name("mokiban-asmens_kodas"); // Asmens kodas
-    By submitButton = By.xpath("//a[@class='popup-pildyti']"); // Tęsti >
-    By termDropdownListLocator = By.xpath("//select[@class]"); // Laikotarpis
-    By termOptionsLocator = By.xpath("//select[@class]/option");
+    By wizardGeneralLocator = By.id("myform");
+    // Since form[@id='myform'] is not time-specific and displayed always, it is required to make this locator more
+    // precise to tailor it to different scenarios (22:00-07:00 vs 07:00-22:00)
+    By wizardActiveLocator = By.xpath("//form[contains(., 'Pildoma paraiška: Paskolai automobiliui')]");
+    // Remiantis vartojimo kredito įstatymu, vartojimo kredito sutartys nuo 22 iki 7 valandos ryto negali būti sudaromos.
+    By wizardInactiveLocator = By.id("process_closed"); //form//div[@id='process_closed']
 
-    public ApplyForLoan(WebDriver driver) {
+    public ApplyForLoan(WebDriver driver, Boolean expectingExternalPartyToBeLoaded) {
         super(driver);
-        visit("/paskola");
-        assertTrue("The loan form/calculator is not present",
-                isDisplayed(loanFormLocator));
-        WebElement context = driver.findElement(loanFormLocator);
-        driver.switchTo().frame(context);
-    }
-
-    public void as(String name, String surname, String ssn, String phoneNo, String email) {
-        type(nameLocator, name);
-        type(surnameLocator, surname);
-        type(ssnLocator, ssn);
-        type(phoneNoLocator, phoneNo);
-        type(emailLocator, email);
-    }
-
-    public Boolean errorMessageForEmailPresent() {
-        return isDisplayed(errorMessageForEmailLocator);
-    }
-
-    public Boolean errorMessageForNamePresent() {
-        return isDisplayed(errorMessageForNameLocator);
-    }
-
-    public Boolean errorMessageForPhoneNoPresent() {
-        return isDisplayed(errorMessageForPhoneNoLocator);
-    }
-
-    public Boolean errorMessageForRegulatoryPresent() {
-        return isDisplayed(errorMessageForRegulatoryLocator);
-    }
-
-    public Boolean errorMessageForSsnPresent() {
-        return isDisplayed(errorMessageForSsnLocator);
-    }
-
-    public Boolean errorMessageForSurnamePresent() {
-        return isDisplayed(errorMessageForSurnameLocator);
-    }
-
-    public Boolean failureMessagePresent() {
-        return isDisplayed(failureMessageLocator, 10);
-    }
-
-    public void giveConsents(Boolean regulatoryConsentGiven, Boolean marketingConsentGiven) {
-        if (regulatoryConsentGiven) {
-            click(consentToRegulatoryCheckbox);
-        }
-        if (marketingConsentGiven) {
-            click(consentToMarketingCheckbox);
+        driver.switchTo().defaultContent();
+        if (expectingExternalPartyToBeLoaded) {
+            assertTrue("Mokilizingas loaning system is not present",
+                    isDisplayed(wizardGeneralLocator, 10));
+        } else {
+            assertFalse("Mokilizingas loaning system is present",
+                    isDisplayed(wizardGeneralLocator, 10));
         }
     }
 
-    // Reserved for e.mokilizingas.lt
-    public Boolean loaningSystemLoaded() {
-        return isDisplayed(loaningSystemWizardLocator, 10);
+    public Boolean activeWizardPresent() {
+        return isDisplayed(wizardActiveLocator, 15);
     }
 
-    public void ofAmountAndTerm(String loanAmount, String term) {
-        type(loanAmountLocator, loanAmount);
-        select(termDropdownListLocator, termOptionsLocator, term);
-    }
-
-    public String ofAmountAndTerm(String loanAmount, String term, Boolean installmentAmountRequired) {
-        type(loanAmountLocator, loanAmount);
-        select(termDropdownListLocator, termOptionsLocator, term);
-        String installmentAmount = null;
-        if (installmentAmountRequired) {
-            installmentAmount = getTextOf(installmentAmountLocator);
-        }
-        return installmentAmount;
-    }
-
-    public void submit() {
-        click(submitButton);
+    public Boolean inactiveWizardPresent() {
+        return isDisplayed(wizardInactiveLocator, 15);
     }
 
 }

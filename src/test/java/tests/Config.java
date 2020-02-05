@@ -1,5 +1,9 @@
 package tests;
 
+/**
+ * @author M. Tumėnas
+ * @since 2020-02-02
+ */
 public class Config {
     public static final String baseUrl = System.getProperty("baseUrl", "https://www.autobilis.lt");
     public static final String host = System.getProperty("host", "localhost");

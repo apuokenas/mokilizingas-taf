@@ -16,6 +16,10 @@ import java.net.URL;
 
 import static tests.Config.*;
 
+/**
+ * @author M. Tumėnas
+ * @since 2020-02-02
+ */
 public class BaseTest {
 
     protected WebDriver driver;
